@@ -1,0 +1,64 @@
+CREATE DATABASE restaurant_management;
+USE restaurant_management;
+
+-- Bảng nguyên liệu (ingredients): Lưu thông tin về nguyên liệu trong kho
+CREATE TABLE ingredients (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,  -- Tên nguyên liệu (VD: Cá hồi, Gạo, Rong biển)
+    quantity FLOAT NOT NULL,  -- Số lượng còn lại trong kho
+    unit VARCHAR(20) NOT NULL,  -- Đơn vị đo lường (VD: kg, gram, lít)
+    min_threshold FLOAT NOT NULL,  -- Ngưỡng tối thiểu để cảnh báo thiếu nguyên liệu
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Bảng món ăn (dishes): Lưu thông tin về món ăn trong menu nhà hàng
+CREATE TABLE dishes (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,  -- Tên món ăn (VD: Sushi Cá Hồi, Ramen)
+    price DECIMAL(10,2) NOT NULL,  -- Giá tiền của món ăn
+    description TEXT,  -- Mô tả món ăn
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Bảng công thức món ăn (recipe): Xác định nguyên liệu cần thiết cho từng món ăn
+CREATE TABLE recipe (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    dish_id INT,
+    ingredient_id INT,
+    quantity_required FLOAT NOT NULL,  -- Số lượng nguyên liệu cần để chế biến món ăn
+    unit VARCHAR(20) NOT NULL,  -- Đơn vị đo lường
+    FOREIGN KEY (dish_id) REFERENCES dishes(id) ON DELETE CASCADE,
+    FOREIGN KEY (ingredient_id) REFERENCES ingredients(id) ON DELETE CASCADE
+);
+
+-- Bảng đo lường nguyên liệu theo thời gian thực (measurements)
+CREATE TABLE measurements (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    ingredient_id INT,
+    weight FLOAT NOT NULL,  -- Trọng lượng đo được
+    unit VARCHAR(10) NOT NULL,  -- Đơn vị đo (kg, g)
+    measured_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,  -- Thời điểm đo
+    FOREIGN KEY (ingredient_id) REFERENCES ingredients(id) ON DELETE CASCADE
+);
+
+-- Bảng đơn hàng (orders): Lưu trữ thông tin đơn hàng từ khách hàng
+CREATE TABLE orders (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT,
+    dish_id INT,
+    quantity INT NOT NULL,  -- Số lượng món ăn được đặt
+    total_price DECIMAL(10,2) NOT NULL,  -- Tổng số tiền của đơn hàng
+    order_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,  -- Thời gian đặt món
+    status ENUM('pending', 'completed', 'canceled') DEFAULT 'pending',  -- Trạng thái đơn hàng
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL,
+    FOREIGN KEY (dish_id) REFERENCES dishes(id) ON DELETE CASCADE
+);
+
+-- Bảng người dùng (users): Lưu trữ thông tin nhân viên và quản lý nhà hàng
+CREATE TABLE users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(50) UNIQUE NOT NULL,  -- Tên đăng nhập
+    password VARCHAR(255) NOT NULL,  -- Mật khẩu (cần mã hóa để bảo mật)
+    role ENUM('admin', 'chef', 'waiter') NOT NULL,  -- Vai trò của người dùng
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
