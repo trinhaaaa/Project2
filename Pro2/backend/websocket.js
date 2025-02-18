@@ -1,38 +1,75 @@
 const WebSocket = require('ws');
-const mysql = require('mysql2');
+const mysql = require('mysql');
 
-const wss = new WebSocket.Server({ port: 8080 });
+function startWebSocket() {
+    // Kết nối MySQL
+    const db = mysql.createConnection({
+        host: "localhost",
+        user: "root",
+        password: "",
+        database: "food"
+    });
 
-const db = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: '',
-    database: 'food'
-});
+    db.connect(err => {
+        if (err) {
+            console.error(" Error connecting to MySQL:", err);
+            return;
+        }
+        console.log("Connected to MySQL database.");
+    });
 
-wss.on('connection', (ws) => {
-    console.log('ESP32 connected');
+    // Tạo WebSocket server
+    const wss = new WebSocket.Server({ port: 8080 });
 
-    ws.on('message', (message) => {
-        const data = JSON.parse(message);
-        const { ingredient_id, quantity } = data;
+    // Lưu trạng thái nguyên liệu để tránh cập nhật dư thừa
+    let lastQuantities = {};
 
-        // Cập nhật trực tiếp bảng ingredients
-        const updateQuery = "UPDATE ingredients SET quantity = ? WHERE id = ?";
-        db.query(updateQuery, [quantity, ingredient_id], (err) => {
-            if (err) throw err;
-            console.log(`Updated ingredient ${ingredient_id}: ${quantity}kg`);
+    wss.on("connection", ws => {
+        console.log("New client connected.");
 
-            // Gửi dữ liệu real-time đến frontend
-            wss.clients.forEach(client => {
-                if (client.readyState === WebSocket.OPEN) {
-                    client.send(JSON.stringify({ ingredient_id, quantity }));
+        ws.on("message", message => {
+            console.log(" Received:", message);
+            try {
+                const data = JSON.parse(message);
+
+                if (data.sensor && data.id && data.quantity !== undefined) {
+                    const ingredientId = data.id;
+                    const newQuantity = parseFloat(data.quantity);  // Sửa từ weight → quantity
+
+                    // Chỉ cập nhật nếu trọng lượng thay đổi > 10g
+                    if (!lastQuantities[ingredientId] || Math.abs(lastQuantities[ingredientId] - newQuantity) > 0.01) {
+                        const sql = "UPDATE ingredients SET quantity = ? WHERE id = ?";
+                        db.query(sql, [newQuantity, ingredientId], (err, result) => {
+                            if (err) {
+                                console.error(" Database error:", err);
+                                return;
+                            }
+                            console.log(` Updated ingredient ${ingredientId} with quantity ${newQuantity}`);
+                        });
+
+                        lastQuantities[ingredientId] = newQuantity; // Cập nhật trạng thái
+
+                        // Phản hồi về ESP32
+                        ws.send(JSON.stringify({ status: "success", id: ingredientId, quantity: newQuantity }));
+                    } else {
+                        console.log(`⚠ Skipping update for ingredient ${ingredientId}, change too small.`);
+                    }
                 }
-            });
+            } catch (err) {
+                console.error(" Invalid JSON:", err);
+            }
+        });
+
+        ws.on("close", () => {
+            console.log(" Client disconnected.");
+        });
+
+        ws.on("error", err => {
+            console.error(" WebSocket error:", err);
         });
     });
 
-    ws.on('close', () => console.log('ESP32 disconnected'));
-});
+    console.log("WebSocket server running on ws://localhost:8080");
+}
 
-console.log("WebSocket server running on port 8080");
+module.exports = startWebSocket;

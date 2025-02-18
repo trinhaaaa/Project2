@@ -1,21 +1,12 @@
 const express = require("express");
 const cors = require("cors");
-const bcrypt = require("bcryptjs");
+
 const app = express();
+
 const userRoutes = require("./routes/userRoutes.js");
 const productRoutes = require("./routes/productRoutes.js");
 const orderRoutes = require("./routes/orderRoutes.js");
-// const helmet = require("helmet");
-
-// app.use(
-//     helmet.contentSecurityPolicy({
-//         directives: {
-//             defaultSrc: ["'self'"],
-//             fontSrc: ["'self'", "https://fonts.googleapis.com"],
-//         },
-//     })
-// );
-
+const ingredientRoutes = require("./routes/ingredientRoutes.js");
 
 app.use(cors());
 app.use(express.json());
@@ -23,19 +14,16 @@ app.use(express.json());
 app.use("/api", productRoutes);
 app.use("/api", userRoutes);
 app.use("/api", orderRoutes);
+app.use("/api", ingredientRoutes);
 
-require('./websocket');
+// Route kiểm tra server đang chạy
+app.get("/", (req, res) => {
+    res.send("Server is running!");
+});
 
-
-
-
-// app.get('/profile', (req, res) => {
-//   if (req.session.user) {
-//     res.render('profile', { user: req.session.user });
-//   } else {
-//     res.redirect('/login');
-//   }
-// });
+// Bắt đầu WebSocket
+const startWebSocket = require("./websocket");
+startWebSocket();
 
 const PORT = 8801;
 app.listen(PORT, () => {
