@@ -19,6 +19,11 @@ const Sidebar = () => {
           <img src={assets.order_icon} alt="" />
           <p>Orders</p>
         </NavLink>
+        {/* Thêm tùy chọn Hidden Items */}
+        <NavLink to="/hidden" className="sidebar-option">
+          <img src={assets.hidden_icon} alt="" /> {/* Thay thế icon phù hợp nếu có */}
+          <p>Hidden Items</p>
+        </NavLink>
       </div>
     </div>
   );

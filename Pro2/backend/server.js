@@ -16,14 +16,14 @@ app.use("/api", userRoutes);
 app.use("/api", orderRoutes);
 app.use("/api", ingredientRoutes);
 
-// Route kiểm tra server đang chạy
+// Kiểm tra server
 app.get("/", (req, res) => {
     res.send("Server is running!");
 });
 
 // Bắt đầu WebSocket
-const startWebSocket = require("./websocket");
-startWebSocket();
+ require("./websocket");
+
 
 const PORT = 8801;
 app.listen(PORT, () => {

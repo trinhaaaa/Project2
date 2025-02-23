@@ -1,14 +1,13 @@
+#include <Arduino.h>
 #include <WiFi.h>
 #include <WebSocketsClient.h>
-#include <Arduino.h>
 #include <HX711.h>
 
-// WiFi thông tin
-const char* ssid = "Ha";            
-const char* password = "0365372229"; 
-const char* server = "192.168.1.7";  
-const int port = 8080;
 
+const char* ssid = "Ha";
+const char* password = "0365372229";
+const char* server = "192.168.1.7";  
+const int port = 5000;
 
 #define DOUT1  4
 #define CLK1   5
@@ -17,62 +16,61 @@ HX711 scale1;
 WebSocketsClient webSocket;
 bool isConnected = false;
 float scaleFactor = -471.497; 
+const int id = 1;  
+float lastSentWeight = -1.0;  
 
-int id = 1;  
-float lastQuantity = -1;  
-unsigned long lastUpdateTime = 0; 
-const unsigned long updateInterval = 5000; 
-
+// Xử lý sự kiện WebSocket
 void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
     switch (type) {
         case WStype_CONNECTED:
-            Serial.println(" WebSocket Connected!");
+            Serial.println(" WebSocket Connected");
             isConnected = true;
             webSocket.sendTXT("{\"message\": \"ESP32 connected\"}");
             break;
         case WStype_DISCONNECTED:
-            Serial.println(" WebSocket Disconnected! Reconnecting...");
+            Serial.println(" WebSocket Disconnected");
             isConnected = false;
             break;
         case WStype_TEXT:
-            Serial.print("Received from server: ");
+            Serial.print(" Server Response: ");
             Serial.println((char*)payload);
             break;
     }
 }
 
+// Kết nối WiFi
 void connectWiFi() {
-    Serial.println("Connecting to WiFi...");
+    Serial.println("Kết nối WiFi...");
     WiFi.begin(ssid, password);
     int retries = 0;
 
-    while (WiFi.status() != WL_CONNECTED && retries < 10) {
+    while (WiFi.status() != WL_CONNECTED && retries < 15) {
         delay(1000);
         Serial.print(".");
         retries++;
     }
 
     if (WiFi.status() == WL_CONNECTED) {
-        Serial.println("\nWiFi Connected!");
-        Serial.print(" ESP32 IP Address: ");
-        Serial.println(WiFi.localIP());
+        Serial.println("\nKết nối WiFi thành công!");
     } else {
-        Serial.println("\n WiFi Connection Failed, restarting...");
+        Serial.println("\nWiFi thất bại, khởi động lại ESP32...");
         ESP.restart();
     }
 }
 
+// Kết nối WebSocket
 void connectWebSocket() {
-    Serial.println("Connecting to WebSocket...");
+    Serial.println("Kết nối WebSocket...");
     webSocket.begin(server, port, "/");
     webSocket.onEvent(webSocketEvent);
-    webSocket.setReconnectInterval(5000);
+    webSocket.setReconnectInterval(5000); 
 }
 
+// Khởi tạo Load Cell
 void initializeScale() {
     Serial.println("Khởi động Load Cell...");
-    scale1.set_scale(scaleFactor);  
-    scale1.tare(); 
+    scale1.set_scale(scaleFactor);
+    scale1.tare();  // Đặt cân về 0
     Serial.println("Cân đã sẵn sàng.");
 }
 
@@ -83,44 +81,42 @@ void setup() {
     initializeScale();
 
     connectWiFi();
+    Serial.print("ESP32 IP Address: ");
+    Serial.println(WiFi.localIP());
+
     connectWebSocket();
 }
 
 void loop() {
     if (WiFi.status() != WL_CONNECTED) {
-        Serial.println("WiFi Mất kết nối! Đang thử lại...");
+        Serial.println("WiFi mất kết nối, thử kết nối lại...");
         connectWiFi();
     }
 
     if (!isConnected) {
-        Serial.println("WebSocket Mất kết nối! Đang thử lại...");
+        Serial.println("WebSocket mất kết nối, thử kết nối lại...");
         connectWebSocket();
     }
 
-    float quantity = scale1.get_units(10); // Đọc trung bình 10 lần để giảm nhiễu
+    // Đọc dữ liệu từ Load Cell
+    float weight1 = scale1.get_units(10);
 
-    if (abs(quantity) < 1.0) {  
-        quantity = 0.00; // Nếu nhỏ hơn 1g, coi như 0
+    if (abs(weight1) < 1.0) {  
+        weight1 = 0.00;
     }
 
-    unsigned long currentTime = millis();
+    Serial.print("Cân nặng: "); 
+    Serial.print(weight1, 2); 
+    Serial.println(" g");
 
-    // Chỉ gửi dữ liệu nếu thay đổi > 10g hoặc sau 5 giây
-    if (abs(quantity - lastQuantity) > 0.01 || (currentTime - lastUpdateTime) > updateInterval) {
-        Serial.print("Cân nặng: "); 
-        Serial.print(quantity, 2); 
-        Serial.println(" kg");
+    // Chỉ gửi nếu cân nặng thay đổi đáng kể (> 1g)
+    if (isConnected && abs(lastSentWeight - weight1) > 1.0) {
+        String jsonData = "{\"id\": " + String(id) + ", \"quantity\": " + String(weight1, 2) + "}";
+        webSocket.sendTXT(jsonData);
+        Serial.println("Đã gửi dữ liệu WebSocket!");
 
-        if (isConnected) {
-            // Thay "weight" thành "quantity" để đúng với database
-            String jsonData = "{\"sensor\":1, \"id\":" + String(id) + ", \"quantity\":" + String(quantity, 2) + "}";
-            webSocket.sendTXT(jsonData);
-            Serial.println("📤 Sent to server: " + jsonData);
-        }
+        lastSentWeight = weight1;  
+    } 
 
-        lastQuantity = quantity;
-        lastUpdateTime = currentTime;
-    }
-
-    delay(500);
+    delay(2000);
 }
