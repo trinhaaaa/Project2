@@ -1,6 +1,6 @@
 const db = require("../db");
 
-// ✅ Lấy danh sách tất cả món ăn (chỉ lấy món chưa bị ẩn)
+//  Lấy danh sách tất cả món ăn (chỉ lấy món chưa bị ẩn)
 function getAllProducts() {
   return new Promise((resolve, reject) => {
     const sql = "SELECT * FROM product WHERE deleted = 0"; 
@@ -14,7 +14,7 @@ function getAllProducts() {
   });
 }
 
-// ✅ Lấy danh sách danh mục món ăn
+//  Lấy danh sách danh mục món ăn
 function getAllMenuList() {
   return new Promise((resolve, reject) => {
     const sql = "SELECT * FROM category";
@@ -28,7 +28,7 @@ function getAllMenuList() {
   });
 }
 
-// ✅ Lấy danh sách món ăn bán chạy (chỉ hiển thị món chưa bị ẩn)
+//  Lấy danh sách món ăn bán chạy (chỉ hiển thị món chưa bị ẩn)
 function getAllTopFoodList() {
   return new Promise((resolve, reject) => {
     const sql = `
@@ -50,7 +50,7 @@ function getAllTopFoodList() {
   });
 }
 
-// ❌ Ẩn món ăn (cập nhật deleted = 1)
+//  Ẩn món ăn (cập nhật deleted = 1)
 function removeFoodItemFromList(product_id) {
   return new Promise((resolve, reject) => {
     const sql = "UPDATE product SET deleted = 1 WHERE product_id = ?";
@@ -64,7 +64,7 @@ function removeFoodItemFromList(product_id) {
   });
 }
 
-// ✅ Hiển thị lại món ăn (cập nhật deleted = 0)
+//  Hiển thị lại món ăn (cập nhật deleted = 0)
 function restoreFoodItem(product_id) {
   return new Promise((resolve, reject) => {
     const sql = "UPDATE product SET deleted = 0 WHERE product_id = ?";
@@ -78,7 +78,7 @@ function restoreFoodItem(product_id) {
   });
 }
 
-// 🔍 Lấy danh sách món ăn bị ẩn (deleted = 1)
+//  Lấy danh sách món ăn bị ẩn (deleted = 1)
 function getHiddenProducts() {
   return new Promise((resolve, reject) => {
     const sql = "SELECT * FROM product WHERE deleted = 1";
