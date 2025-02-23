@@ -184,6 +184,6 @@ module.exports = {
   selectOrderByUserId,
   selectAllOrders,
   changeOrderStatus,
-  checkIngredientAvailability,  //  Kiểm tra nguyên liệu
-  updateIngredientsAfterOrder  // Trừ nguyên liệu ngay sau khi đặt hàng
+  checkIngredientAvailability,  
+  updateIngredientsAfterOrder  
 };

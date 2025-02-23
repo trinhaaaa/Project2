@@ -6,7 +6,7 @@ function getAllProducts() {
     const sql = "SELECT * FROM product WHERE deleted = 0"; 
     db.query(sql, (err, data) => {
       if (err) {
-        console.error("🔥 Lỗi khi lấy danh sách món ăn:", err);
+        console.error(" Lỗi khi lấy danh sách món ăn:", err);
         return reject(err);
       }
       resolve(data);
@@ -20,7 +20,7 @@ function getAllMenuList() {
     const sql = "SELECT * FROM category";
     db.query(sql, (err, results) => {
       if (err) {
-        console.error("🔥 Lỗi khi lấy danh mục món ăn:", err);
+        console.error(" Lỗi khi lấy danh mục món ăn:", err);
         return reject(err);
       }
       resolve(results);
@@ -42,7 +42,7 @@ function getAllTopFoodList() {
     `;
     db.query(sql, (err, results) => {
       if (err) {
-        console.error("🔥 Lỗi khi lấy danh sách món bán chạy:", err);
+        console.error(" Lỗi khi lấy danh sách món bán chạy:", err);
         return reject(err);
       }
       resolve(results);
@@ -56,7 +56,7 @@ function removeFoodItemFromList(product_id) {
     const sql = "UPDATE product SET deleted = 1 WHERE product_id = ?";
     db.query(sql, [product_id], (err, res) => {
       if (err) {
-        console.error(`🔥 Lỗi khi ẩn món ${product_id}:`, err);
+        console.error(` Lỗi khi ẩn món ${product_id}:`, err);
         return reject(err);
       }
       resolve(res.affectedRows > 0);
@@ -70,7 +70,7 @@ function restoreFoodItem(product_id) {
     const sql = "UPDATE product SET deleted = 0 WHERE product_id = ?";
     db.query(sql, [product_id], (err, res) => {
       if (err) {
-        console.error(`🔥 Lỗi khi khôi phục món ${product_id}:`, err);
+        console.error(` Lỗi khi khôi phục món ${product_id}:`, err);
         return reject(err);
       }
       resolve(res.affectedRows > 0);
@@ -84,7 +84,7 @@ function getHiddenProducts() {
     const sql = "SELECT * FROM product WHERE deleted = 1";
     db.query(sql, (err, data) => {
       if (err) {
-        console.error("🔥 Lỗi khi lấy danh sách món bị ẩn:", err);
+        console.error(" Lỗi khi lấy danh sách món bị ẩn:", err);
         return reject(err);
       }
       resolve(data);
