@@ -1,7 +1,7 @@
 const db = require("../db"); // Import database connection
 const productModel = require("../models/productModels.js");
 
-// 🛒 Lấy danh sách tất cả món ăn (chỉ lấy món còn bán)
+//  Lấy danh sách tất cả món ăn (chỉ lấy món còn bán)
 const getProductList = async (req, res) => {
   try {
     const products = await productModel.getAllProducts();
@@ -12,7 +12,7 @@ const getProductList = async (req, res) => {
   }
 };
 
-// 📂 Lấy danh sách danh mục món ăn
+//  Lấy danh sách danh mục món ăn
 const getMenuList = async (req, res) => {
   try {
     const menuList = await productModel.getAllMenuList();
