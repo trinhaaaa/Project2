@@ -7,6 +7,14 @@ const Sidebar = () => {
   return (
     <div className="sidebar">
       <div className="sidebar-options">
+      <NavLink to="/discount" className="sidebar-option">
+          <img src={assets.discount_icon} alt="discount" /> 
+          <p>discount</p>
+        </NavLink>
+        <NavLink to="/ingredients" className="sidebar-option">
+          <img src={assets.ingredient_icon} alt="Ingredients" />
+          <p>Ingredients</p>
+        </NavLink>
         <NavLink to="/add" className="sidebar-option">
           <img src={assets.add_icon} alt="" />
           <p>Add Items</p>
@@ -19,11 +27,12 @@ const Sidebar = () => {
           <img src={assets.order_icon} alt="" />
           <p>Orders</p>
         </NavLink>
-        {/* Thêm tùy chọn Hidden Items */}
+        {}
         <NavLink to="/hidden" className="sidebar-option">
-          <img src={assets.hidden_icon} alt="" /> {/* Thay thế icon phù hợp nếu có */}
+          <img src={assets.hidden_icon} alt="" /> 
           <p>Hidden Items</p>
         </NavLink>
+
       </div>
     </div>
   );

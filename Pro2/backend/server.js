@@ -7,7 +7,7 @@ const userRoutes = require("./routes/userRoutes.js");
 const productRoutes = require("./routes/productRoutes.js");
 const orderRoutes = require("./routes/orderRoutes.js");
 const ingredientRoutes = require("./routes/ingredientRoutes.js");
-
+const discountRoutes = require("./routes/discountRoutes.js");
 app.use(cors());
 app.use(express.json());
 
@@ -15,7 +15,7 @@ app.use("/api", productRoutes);
 app.use("/api", userRoutes);
 app.use("/api", orderRoutes);
 app.use("/api", ingredientRoutes);
-
+app.use("/api/discount", discountRoutes);
 // Kiểm tra server
 app.get("/", (req, res) => {
     res.send("Server is running!");
