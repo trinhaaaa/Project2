@@ -4,7 +4,7 @@ const db = require("../db");
 exports.getMostAbundantIngredient = () => {
     return new Promise((resolve, reject) => {
         db.query(
-            `SELECT id, name FROM ingredients ORDER BY quantity DESC LIMIT 1 `,
+            `SELECT id, name FROM ingredients ORDER BY quantity DESC LIMIT 1`,
             (err, result) => {
                 if (err) {
                     console.error(" Lỗi lấy nguyên liệu dư thừa:", err);

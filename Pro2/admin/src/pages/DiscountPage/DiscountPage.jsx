@@ -79,7 +79,7 @@ const DiscountPage = () => {
                 <ul>
                     {discounts.map((d) => (
                         <li key={d.id}>
-                            <strong>{d.name}</strong> - {d.value}% giảm giá
+                              {d.value}% giảm giá
                         </li>
                     ))}
                 </ul>
