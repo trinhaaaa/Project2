@@ -1,0 +1,138 @@
+
+.dashboard-container {
+    max-width: 1100px; 
+    margin-right: 50px; 
+    font-family: "Poppins", sans-serif;
+    padding: 20px;
+}
+
+
+.dashboard-container h2 {
+    font-size: 28px; 
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+
+.search-input {
+    padding: 12px;
+    width: 350px; 
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-size: 16px;
+    margin-bottom: 20px;
+}
+
+
+.ingredients-table {
+    width: 100%;
+    max-width: 800px; 
+    border-collapse: collapse;
+    background-color: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+    font-size: 18px; 
+}
+
+
+.ingredients-table th {
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-bottom: 2px solid #ddd;
+    text-align: left;
+    font-size: 18px;
+}
+
+
+.ingredients-table td {
+    padding: 15px;
+    border-bottom: 1px solid #ddd;
+    font-size: 18px;
+    text-align: left;
+}
+
+
+.ingredients-table td:first-child {
+    font-weight: bold;
+}
+
+
+.low-stock {
+    color: red !important;
+    font-weight: bold;
+}
+
+
+.quantity-cell {
+    font-weight: bold;
+    color: green;
+}
+
+
+.ingredients-table tbody tr:hover {
+    background-color: #f1f1f1;
+    transition: 0.3s;
+}
+
+.popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4); 
+    z-index: 999; 
+}
+
+
+.popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 20px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+    z-index: 1000; 
+    width: 300px;
+    text-align: center;
+}
+
+
+.popup-content h3 {
+    color: red;
+    margin-bottom: 10px;
+}
+
+
+.popup-content ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.popup-content li {
+    font-size: 16px;
+    margin-bottom: 5px;
+}
+
+
+.popup-content button {
+    background: red;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.popup-content button:hover {
+    background: darkred;
+}

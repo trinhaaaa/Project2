@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-
 import { showToast } from "../../components/Notification/ToastProvider";
+import "./HiddenList.css"; 
 
 const HiddenList = () => {
   const [hiddenList, setHiddenList] = useState([]);
@@ -36,7 +36,7 @@ const HiddenList = () => {
       }
 
       await response.json();
-      showToast("Restored successfully!");
+      showToast("Restored successfully!", "success");
 
       // Cập nhật lại danh sách sau khi khôi phục món ăn
       setHiddenList(hiddenList.filter(item => item.product_id !== product_id));
@@ -51,10 +51,10 @@ const HiddenList = () => {
   }, []);
 
   return (
-    <div className="list add flex-col">
-      <p>Hidden Foods List</p>
+    <div className="list-container">
+      <h2>Hidden Foods List</h2>
       <table className="list-table">
-        <thead className="thead-dark">
+        <thead>
           <tr>
             <th>#</th>
             <th>Image</th>
@@ -68,19 +68,19 @@ const HiddenList = () => {
         </thead>
         <tbody>
           {hiddenList.map((item, index) => {
-            const imgPath = "public/" + item.thumbnail + ".jpg";
+            const imgPath = `/public/${item.thumbnail}.jpg`;
 
             return (
-              <tr key={index} className="list-table-format">
+              <tr key={index}>
                 <td>{index + 1}</td>
                 <td>
-                  <img src={imgPath} alt="" />
+                  <img className="food-image" src={imgPath} alt={item.name} />
                 </td>
                 <td>{item.product_id}</td>
                 <td>{item.name}</td>
                 <td>{item.category_id}</td>
                 <td>on upload</td>
-                <td>{item.price},000 vnd</td>
+                <td>{item.price},000 VND</td>
                 <td>
                   <button className="restore-btn" onClick={() => restoreFood(item.product_id)}>
                     Khôi phục

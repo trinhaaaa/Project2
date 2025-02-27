@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
+import "./IngredientDashboard.css";
 
 const IngredientDashboard = () => {
     const [ingredients, setIngredients] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
+    const [lowStockItems, setLowStockItems] = useState([]);
+    const [showPopup, setShowPopup] = useState(false);
 
-    // **1️⃣ Fetch dữ liệu ban đầu từ API**
     useEffect(() => {
         fetchIngredients();
     }, []);
@@ -14,12 +16,20 @@ const IngredientDashboard = () => {
             const response = await fetch("http://localhost:8801/api/ingredients");
             const data = await response.json();
             setIngredients(data);
+            checkLowStock(data);
         } catch (error) {
             console.error("❌ Lỗi lấy dữ liệu nguyên liệu:", error);
         }
     };
 
-    // **2️⃣ WebSocket: Nhận cập nhật ngay lập tức từ ESP32**
+    const checkLowStock = (data) => {
+        const lowStock = data.filter(item => item.quantity <= item.min_threshold);
+        if (lowStock.length > 0) {
+            setLowStockItems(lowStock);
+            setShowPopup(true);
+        }
+    };
+
     useEffect(() => {
         const ws = new WebSocket("ws://localhost:5678");
 
@@ -33,13 +43,15 @@ const IngredientDashboard = () => {
                 console.log("📩 Dữ liệu WebSocket nhận được:", data);
 
                 if (data.status === "update" && data.id && data.quantity !== undefined) {
-                    setIngredients((prevIngredients) =>
-                        prevIngredients.map((ingredient) =>
+                    setIngredients((prevIngredients) => {
+                        const updatedIngredients = prevIngredients.map((ingredient) =>
                             ingredient.id === data.id
-                                ? { ...ingredient, quantity: data.quantity } // 🔥 Cập nhật ngay lập tức
+                                ? { ...ingredient, quantity: data.quantity }
                                 : ingredient
-                        )
-                    );
+                        );
+                        checkLowStock(updatedIngredients);
+                        return updatedIngredients;
+                    });
                 }
             } catch (err) {
                 console.error("❌ Lỗi parse dữ liệu WebSocket:", err);
@@ -53,7 +65,7 @@ const IngredientDashboard = () => {
         ws.onclose = () => {
             console.log("⚠️ WebSocket đã đóng, đang thử lại...");
             setTimeout(() => {
-                window.location.reload(); // 🔄 Nếu mất kết nối, tự động tải lại trang
+                window.location.reload();
             }, 5000);
         };
 
@@ -63,23 +75,23 @@ const IngredientDashboard = () => {
     }, []);
 
     return (
-        <div>
+        <div className="dashboard-container">
             <h2>📦 Quản lý Nguyên Liệu</h2>
 
-            <input 
+            <input
                 type="text"
                 placeholder="🔍 Tìm nguyên liệu..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                style={{ marginBottom: "10px", padding: "5px", width: "200px" }}
+                className="search-input"
             />
-            
-            <table border="1">
+
+            <table className="ingredients-table">
                 <thead>
                     <tr>
-                        <th>📋 Tên nguyên liệu</th>
-                        <th>⚖️ Số lượng</th>
-                        <th>📏 Đơn vị</th>
+                        <th>Tên nguyên liệu</th>
+                        <th>Số lượng</th>
+                        <th>Đơn vị</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -90,7 +102,7 @@ const IngredientDashboard = () => {
                         .map(ingredient => (
                             <tr key={ingredient.id}>
                                 <td>{ingredient.name}</td>
-                                <td style={{ fontWeight: "bold", color: "green" }}>
+                                <td className={`quantity-cell ${ingredient.quantity <= ingredient.min_threshold ? "low-stock" : ""}`}>
                                     {ingredient.quantity}
                                 </td>
                                 <td>{ingredient.unit}</td>
@@ -98,6 +110,24 @@ const IngredientDashboard = () => {
                         ))}
                 </tbody>
             </table>
+
+            {showPopup && (
+                <>
+                    <div className="popup-overlay"></div> {/* Nền xám mờ */}
+                    <div className="popup">
+                        <div className="popup-content">
+                            <h3>⚠️ Cảnh báo nguyên liệu sắp hết!</h3>
+                            <ul>
+                                {lowStockItems.map((item) => (
+                                    <li key={item.id}>{item.name}: {item.quantity} {item.unit}</li>
+                                ))}
+                            </ul>
+                            <button onClick={() => setShowPopup(false)}>Đóng</button>
+                        </div>
+                    </div>
+                </>
+            )}
+
         </div>
     );
 };

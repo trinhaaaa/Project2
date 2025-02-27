@@ -5,7 +5,7 @@ import { Route, Routes } from "react-router-dom";
 import Add from "./pages/Add/Add";
 import List from "./pages/List/List";
 import Order from "./pages/Orders/Orders.jsx";
-import IngredientDashboard from "./components/IngredientDashboard.jsx";
+import IngredientDashboard from "./pages/IngredientDashboard/IngredientDashboard.jsx";
 import HiddenList from "./pages/HiddenList/HiddenList.jsx";
 import DiscountPage from "./pages/DiscountPage/DiscountPage"; 
 
