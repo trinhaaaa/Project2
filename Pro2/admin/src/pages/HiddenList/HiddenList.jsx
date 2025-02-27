@@ -5,7 +5,7 @@ import "./HiddenList.css";
 const HiddenList = () => {
   const [hiddenList, setHiddenList] = useState([]);
 
-  // Lấy danh sách món ăn bị ẩn
+  //  ăn bị ẩn
   const fetchHiddenList = async () => {
     try {
       const res = await fetch("http://localhost:8801/api/hiddenProducts");

@@ -1,0 +1,98 @@
+.discount-container {
+
+    max-width: 1200px;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+
+h2 {
+    font-size: 24px;
+    font-weight: bold;
+    color: #ec0a0a;
+}
+
+
+.button-group {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.discount-button {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    min-width: 160px;
+}
+
+.auto-discount {
+    background-color: rgb(50, 172, 89);
+    color: white;
+}
+
+.auto-discount:hover {
+    background-color: darkred;
+}
+
+.delete-discount {
+    background-color: black;
+    color: white;
+}
+
+.delete-discount:hover {
+    background-color: #333;
+}
+
+
+.discount-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 0;
+    gap: 15px;
+    list-style: none;
+    margin-top: 20px;
+}
+
+
+.discount-item {
+    display: flex;
+    align-items: center;
+    background: #f9f9f9;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+    width: 350px;
+    text-align: left;
+}
+
+.discount-image {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-right: 15px;
+}
+
+.discount-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.discount-name {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.discount-value {
+    color: green;
+    font-weight: bold;
+    font-size: 16px;
+}

@@ -18,7 +18,7 @@ const IngredientDashboard = () => {
             setIngredients(data);
             checkLowStock(data);
         } catch (error) {
-            console.error("❌ Lỗi lấy dữ liệu nguyên liệu:", error);
+            console.error("Lỗi lấy dữ liệu nguyên liệu:", error);
         }
     };
 
@@ -34,13 +34,13 @@ const IngredientDashboard = () => {
         const ws = new WebSocket("ws://localhost:5678");
 
         ws.onopen = () => {
-            console.log("✅ WebSocket đã kết nối.");
+            console.log("WebSocket đã kết nối.");
         };
 
         ws.onmessage = (event) => {
             try {
                 const data = JSON.parse(event.data);
-                console.log("📩 Dữ liệu WebSocket nhận được:", data);
+                console.log("Dữ liệu WebSocket nhận được:", data);
 
                 if (data.status === "update" && data.id && data.quantity !== undefined) {
                     setIngredients((prevIngredients) => {
@@ -54,16 +54,16 @@ const IngredientDashboard = () => {
                     });
                 }
             } catch (err) {
-                console.error("❌ Lỗi parse dữ liệu WebSocket:", err);
+                console.error("Lỗi parse dữ liệu WebSocket:", err);
             }
         };
 
         ws.onerror = (error) => {
-            console.error("❌ Lỗi WebSocket:", error);
+            console.error("Lỗi WebSocket:", error);
         };
 
         ws.onclose = () => {
-            console.log("⚠️ WebSocket đã đóng, đang thử lại...");
+            console.log("WebSocket đã đóng, đang thử lại...");
             setTimeout(() => {
                 window.location.reload();
             }, 5000);
@@ -113,10 +113,10 @@ const IngredientDashboard = () => {
 
             {showPopup && (
                 <>
-                    <div className="popup-overlay"></div> {/* Nền xám mờ */}
+                    <div className="popup-overlay"></div> 
                     <div className="popup">
                         <div className="popup-content">
-                            <h3>⚠️ Cảnh báo nguyên liệu sắp hết!</h3>
+                            <h3>Cảnh báo nguyên liệu sắp hết!</h3>
                             <ul>
                                 {lowStockItems.map((item) => (
                                     <li key={item.id}>{item.name}: {item.quantity} {item.unit}</li>

@@ -14,6 +14,22 @@ exports.getMostAbundantIngredient = () => {
         );
     });
 };
+exports.getDiscounts = () => {
+    return new Promise((resolve, reject) => {
+        db.query(
+            `SELECT d.id, d.name AS discount_name, d.value, p.name AS dish_name
+             FROM discount d
+             JOIN promote pr ON d.id = pr.id_discount
+             JOIN product p ON pr.id_product = p.product_id`,
+            (err, results) => {
+                if (err) {
+                    console.error("Lỗi lấy danh sách giảm giá:", err);
+                    reject(err);
+                } else resolve(results);
+            }
+        );
+    });
+};
 
 //  Lấy món ăn có sử dụng nguyên liệu nhiều nhất
 exports.getDishByIngredient = (ingredientId) => {
@@ -107,3 +123,43 @@ exports.linkDiscountToProduct = (productId, discountId) => {
         );
     });
 };
+exports.deleteAllDiscounts = () => {
+    return new Promise((resolve, reject) => {
+        db.query("DELETE FROM promote", (err) => {
+            if (err) {
+                console.error("Lỗi khi xóa `promote`:", err);
+                reject(err);
+            } else {
+                db.query("DELETE FROM discount", (err) => {
+                    if (err) {
+                        console.error("Lỗi khi xóa `discount`:", err);
+                        reject(err);
+                    } else {
+                        resolve();
+                    }
+                });
+            }
+        });
+    });
+};
+
+exports.getDiscounts = () => {
+    return new Promise((resolve, reject) => {
+        db.query(
+            `SELECT d.id, d.name AS discount_name, d.value, 
+                    p.name AS dish_name, 
+                    p.thumbnail AS dish_image, 
+                    p.price AS dish_price
+             FROM discount d
+             JOIN promote pr ON d.id = pr.id_discount
+             JOIN product p ON pr.id_product = p.product_id`,
+            (err, results) => {
+                if (err) {
+                    console.error("Lỗi lấy danh sách giảm giá:", err);
+                    reject(err);
+                } else resolve(results);
+            }
+        );
+    });
+};
+

@@ -1,13 +1,9 @@
 const express = require("express");
 const router = express.Router();
-const discountControllers = require("../controllers/discountControllers");
+const discountControllers = require("../controllers/discountControllers"); // ❌ Lỗi vì file không được export đúng
 
-//  Kiểm tra API giảm giá có hoạt động không
-router.get("/", (req, res) => {
-    res.json({ success: true, message: "API giảm giá đang hoạt động!" });
-});
-
-//  Tạo giảm giá tự động
+router.get("/", discountControllers.getDiscounts);
 router.post("/auto-discount", discountControllers.autoDiscount);
+router.delete("/delete-all", discountControllers.deleteAllDiscounts);
 
 module.exports = router;
