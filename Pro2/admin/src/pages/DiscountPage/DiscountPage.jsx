@@ -79,7 +79,7 @@ const DiscountPage = () => {
         <div className="discount-container">
             <h2>Quản lý Giảm Giá</h2>
 
-            {/* Nhóm nút bấm */}
+         
             <div className="button-group">
                 <button
                     onClick={autoDiscount}

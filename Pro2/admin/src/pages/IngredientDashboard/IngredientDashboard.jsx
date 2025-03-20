@@ -24,10 +24,8 @@ const IngredientDashboard = () => {
 
     const checkLowStock = (data) => {
         const lowStock = data.filter(item => item.quantity <= item.min_threshold);
-        if (lowStock.length > 0) {
-            setLowStockItems(lowStock);
-            setShowPopup(true);
-        }
+        setLowStockItems(lowStock);
+        setShowPopup(lowStock.length > 0);
     };
 
     useEffect(() => {
@@ -42,13 +40,13 @@ const IngredientDashboard = () => {
                 const data = JSON.parse(event.data);
                 console.log("Dữ liệu WebSocket nhận được:", data);
 
-                if (data.status === "update" && data.id && data.quantity !== undefined) {
+                if (data.status === "update" && Array.isArray(data.updates)) {
                     setIngredients((prevIngredients) => {
-                        const updatedIngredients = prevIngredients.map((ingredient) =>
-                            ingredient.id === data.id
-                                ? { ...ingredient, quantity: data.quantity }
-                                : ingredient
-                        );
+                        const updatedIngredients = prevIngredients.map((ingredient) => {
+                            const updatedItem = data.updates.find(update => update.id === ingredient.id);
+                            return updatedItem ? { ...ingredient, quantity: updatedItem.quantity } : ingredient;
+                        });
+
                         checkLowStock(updatedIngredients);
                         return updatedIngredients;
                     });
@@ -65,7 +63,8 @@ const IngredientDashboard = () => {
         ws.onclose = () => {
             console.log("WebSocket đã đóng, đang thử lại...");
             setTimeout(() => {
-                window.location.reload();
+                const newWs = new WebSocket("ws://localhost:5678");
+                ws = newWs;
             }, 5000);
         };
 
@@ -127,7 +126,6 @@ const IngredientDashboard = () => {
                     </div>
                 </>
             )}
-
         </div>
     );
 };

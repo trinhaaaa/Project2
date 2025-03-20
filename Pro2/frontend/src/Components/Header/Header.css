@@ -1,5 +1,6 @@
 .header-container {
     margin-top: 85px;
+    margin-bottom: 10px;
     display: flex;
     gap: 20px;
     padding: 20px;

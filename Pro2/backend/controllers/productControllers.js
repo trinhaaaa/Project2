@@ -84,7 +84,7 @@ const restoreFoodItem = async (req, res) => {
   }
 };
 
-// 🔍 Lấy danh sách món ăn bị ẩn (deleted = 1)
+// Lấy danh sách món ăn bị ẩn (deleted = 1)
 const getHiddenProducts = async (req, res) => {
   try {
     const sql = "SELECT * FROM product WHERE deleted = 1";

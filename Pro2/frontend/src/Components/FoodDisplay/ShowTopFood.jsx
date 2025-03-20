@@ -1,95 +1,95 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState } from "react";
 import FoodItem from "../FoodItem/FoodItem";
-import "./FoodDisplay.css";
-import { FaBowlFood } from "react-icons/fa6";
-import { StoreContext } from "../../Context/StoreContext";
+import "./ShowTopFood.css";
+import { FaTag } from "react-icons/fa";
 
-const ShowTopFood = () => {
+const DiscountSection = () => {
+  const [discountItems, setDiscountItems] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
-  const [searchQuery, setSearchQuery] = useState("");
+  const itemsPerPage = 8;
 
-  const { top_food_list } = useContext(StoreContext);
-  //   console.log(top_food_list);
   useEffect(() => {
-    setCurrentPage(1);
+    const fetchDiscountItems = async () => {
+      try {
+        const response = await fetch("http://localhost:8801/api/discount");
+        const data = await response.json();
+        
+        if (data.success) {
+          setDiscountItems(data.discounts);
+        } else {
+          setErrorMessage("No promotions found");
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        setErrorMessage("Server connection error");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchDiscountItems();
   }, []);
 
-  //Filter the food list based on category and search query
-  const filteredFoodList = top_food_list.filter((item) => {
-    const matchesSearch = item.name
-      .toLowerCase()
-      .includes(searchQuery.toLowerCase());
-    return matchesSearch;
-  });
-
-  // next page
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = top_food_list.slice(indexOfFirstItem, indexOfLastItem);
-
-  const totalPages = Math.ceil(top_food_list.length / itemsPerPage);
-
-  const handlePrevious = () => {
-    if (currentPage > 1) setCurrentPage(currentPage - 1);
-  };
-
-  const handleNext = () => {
-    if (currentPage < totalPages) setCurrentPage(currentPage + 1);
-  };
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const visibleItems = discountItems.slice(startIndex, endIndex);
+  const totalPages = Math.ceil(discountItems.length / itemsPerPage);
 
   return (
-    <div className="food-display" id="food-display">
-      <h2>
-        <FaBowlFood />
-        Best saler
-      </h2>
+    <section className="discount-section">
+      <header className="section-header">
+        <FaTag className="tag-icon" />
+        <h2>Special Promotions</h2>
+      </header>
 
-      {/* <input
-        type="text"
-        placeholder="Search for food..."
-        value={searchQuery}
-        onChange={(e) => setSearchQuery(e.target.value)}
-        className="search-input"
-      /> */}
+      {isLoading ? (
+        <div className="loading-indicator">Loading promotions...</div>
+      ) : errorMessage ? (
+        <div className="error-message">{errorMessage}</div>
+      ) : (
+        <>
+          <div className="discount-grid">
+            {visibleItems.map((item) => (
+              <div key={item.id} className="food-item-wrapper">
+                <FoodItem
+                  id={item.id}
+                  name={item.dish_name}
+                  price={item.dish_price}
+                  discount={item.value}
+                  image={`public/${item.dish_image}.jpg`}
+                  showSoldOut={false}
+                />
+              </div>
+            ))}
+          </div>
 
-      <div className="food-display-list">
-        {currentItems.map((item, index) => {
-          const imgPath = "public/" + item.thumbnail + ".jpg";
-          return (
-            <FoodItem
-              key={index}
-              id={item.product_id}
-              name={item.name}
-              price={item.price}
-              rate={item.rate}
-              image={imgPath}
-            />
-          );
-        })}
-      </div>
-
-      <div className="pagination">
-        <button
-          className="pagination-button"
-          onClick={handlePrevious}
-          disabled={currentPage === 1}
-        >
-          &lt;
-        </button>
-        <span className="pagination-info">
-          Page {currentPage} of {totalPages}
-        </span>
-        <button
-          className="pagination-button"
-          onClick={handleNext}
-          disabled={currentPage === totalPages || totalPages === 0}
-        >
-          &gt;
-        </button>
-      </div>
-    </div>
+          {totalPages > 1 && (
+            <nav className="page-control">
+              <button 
+                className="page-button" 
+                onClick={() => setCurrentPage(currentPage - 1)}
+                disabled={currentPage === 1}
+              >
+                Previous
+              </button>
+              <span className="page-info">
+                Page {currentPage}/{totalPages}
+              </span>
+              <button
+                className="page-button"
+                onClick={() => setCurrentPage(currentPage + 1)}
+                disabled={currentPage === totalPages}
+              >
+                Next
+              </button>
+            </nav>
+          )}
+        </>
+      )}
+    </section>
   );
 };
 
-export default ShowTopFood;
+export default DiscountSection; 

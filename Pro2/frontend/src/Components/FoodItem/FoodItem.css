@@ -1,20 +1,40 @@
 .food-item-container {
     border-radius: 15px;
     box-shadow: 0px 0px 10px #00000015;
-   
-    animation: fadeIn 1s; 
+    animation: fadeIn 1s;
     width: 100%;
-    height: 400px; 
+    height: 400px;
     position: relative;
-    background-color: #fff; 
+    background-color: #fff;
+    overflow: hidden;
 }
 
-.food-item-container:hover {
-    box-shadow: 2px 2px 12px 0px rgba(84, 82, 82, 0.75); 
+.food-item-container.sold-out {
+    position: relative;
+    background-color: rgba(102, 99, 99, 0.7);
+    /* Làm mờ toàn bộ item khi Sold Out */
+    pointer-events: none;
+    filter: grayscale(10%) brightness(100%);
+    /* Làm mờ và giảm độ sáng */
+}
+
+.food-item-container.sold-out::before {
+    content: "Sold Out";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 24px;
+    font-weight: bold;
+    color: white;
+    background-color: rgba(0, 0, 0, 0.7);
+    padding: 10px 20px;
+    border-radius: 10px;
+    z-index: 10;
 }
 
 .food-item-image-wrapper {
-    height: 230px; 
+    height: 230px;
     overflow: hidden;
     border-radius: 15px 15px 0px 0px;
 }
@@ -28,11 +48,11 @@
 .food-item-info {
     padding: 10px 20px;
     text-align: center;
-    margin-top: 10px; 
+    margin-top: 10px;
 }
 
 .food-item-rate {
-    width: 80px; 
+    width: 80px;
     margin: 5px auto;
     display: block;
 }
@@ -45,7 +65,7 @@
 }
 
 .plus {
-    display: flex; 
+    display: flex;
     justify-content: center;
     align-items: center;
     font-size: 28px;
@@ -53,21 +73,22 @@
     top: 180px;
     right: 12px;
     color: white;
-    cursor: pointer; 
-    width: 30px; 
-    height: 30px; 
-    background-color: black; 
+    cursor: pointer;
+    width: 30px;
+    height: 30px;
+    background-color: black;
     border-radius: 50%;
-    border: 2px solid white; 
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3); 
+    border: 2px solid white;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
     transition: transform 0.2s ease-in-out;
 }
 
 .plus:hover {
-    transform: scale(1.1); 
-    background-color: #333; 
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5); /
+    transform: scale(1.1);
+    background-color: #333;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
 }
+
 .food-item-counter {
     display: flex;
     position: absolute;
@@ -89,4 +110,19 @@
     margin: 0 10px;
     font-size: 16px;
     font-weight: bold;
+}
+
+.discount-tag {
+    position: absolute;
+    top: 21px;
+    right: -35px; 
+    background-color: red;
+    color: white;
+    font-size: 20px; 
+    font-weight: bold;
+    padding: 5px 52px;
+    border-radius: 5px;
+    transform: rotate(45deg); /*nghiêng tag */
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
+    text-align: center;
 }
